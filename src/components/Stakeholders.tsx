@@ -120,7 +120,8 @@ const Stakeholders = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>
+        {`
         @keyframes fade-in-up {
           from {
             opacity: 0;
@@ -142,7 +143,8 @@ const Stakeholders = () => {
             transform: translateX(0);
           }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
@@ -167,13 +169,15 @@ const Check = ({ className }: { className?: string }) => (
         animation: "draw 0.5s ease forwards 0.2s"
       }}
     />
-    <style jsx>{`
+    <style>
+      {`
       @keyframes draw {
         to {
           stroke-dashoffset: 0;
         }
       }
-    `}</style>
+      `}
+    </style>
   </svg>
 );
 
