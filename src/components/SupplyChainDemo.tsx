@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Truck, ShieldCheck, QrCode, Database, ArrowRight, Check } from "lucide-react";
+import { Truck, ShieldCheck, QrCode, Database, ArrowRight, Check, Clock, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -51,6 +52,7 @@ const SupplyChainDemo = () => {
   const sectionRef = useRef(null);
   const timelineRef = useRef(null);
   const autoScrollIntervalRef = useRef(null);
+  const [progress, setProgress] = useState(25);
 
   // Auto scroll through steps
   useEffect(() => {
@@ -69,6 +71,11 @@ const SupplyChainDemo = () => {
     };
   }, []);
 
+  // Update progress based on activeStep
+  useEffect(() => {
+    setProgress(((activeStep + 1) / supplyChainSteps.length) * 100);
+  }, [activeStep]);
+
   // GSAP animations when section comes into view
   useEffect(() => {
     if (sectionRef.current) {
@@ -84,7 +91,7 @@ const SupplyChainDemo = () => {
         }
       });
 
-      gsap.from(sectionRef.current.querySelectorAll('.step-card'), {
+      gsap.from(sectionRef.current.querySelectorAll('.flow-step'), {
         y: 30,
         opacity: 0,
         stagger: 0.15,
@@ -95,23 +102,23 @@ const SupplyChainDemo = () => {
           toggleActions: "play none none none"
         }
       });
+
+      gsap.from(sectionRef.current.querySelector('.flow-detail-card'), {
+        scale: 0.95,
+        opacity: 0,
+        duration: 0.5,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 60%",
+          toggleActions: "play none none none"
+        }
+      });
     }
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
-
-  // Animate timeline progress based on active step
-  useEffect(() => {
-    if (timelineRef.current) {
-      gsap.to(timelineRef.current, {
-        width: `${((activeStep + 1) / supplyChainSteps.length) * 100}%`,
-        duration: 0.5,
-        ease: "power2.out"
-      });
-    }
-  }, [activeStep]);
 
   const handleStepClick = (index) => {
     if (animating || index === activeStep) return;
@@ -138,179 +145,164 @@ const SupplyChainDemo = () => {
   return (
     <div ref={sectionRef} id="solution" className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-16 text-center section-header">
+        <div className="mb-10 text-center section-header">
           <div className="inline-block bg-primary/10 px-4 py-2 rounded-full text-primary font-medium mb-4">How It Works</div>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             End-to-End Supply Chain Tracking
           </h2>
-          <p className="max-w-2xl mx-auto text-lg text-gray-600">
+          <p className="max-w-2xl mx-auto text-lg text-gray-600 mb-8">
             Our blockchain solution ensures transparency and accountability at every step.
           </p>
         </div>
 
-        {/* Modern timeline visualization */}
-        <div className="relative mb-12 overflow-hidden">
-          <div className="absolute top-0 left-0 w-full overflow-hidden whitespace-nowrap py-2">
-            <div className="inline-block animate-marquee">
-              {[...supplyChainSteps, ...supplyChainSteps].map((step, idx) => (
-                <div 
-                  key={`marquee-${step.id}-${idx}`}
-                  className="inline-block px-2"
-                >
-                  <div className={`p-2 rounded-full ${step.color} mx-2 shadow-md`}>
-                    {React.createElement(step.icon, {
-                      className: "h-5 w-5 text-white",
-                    })}
-                  </div>
-                </div>
-              ))}
+        {/* Flow Timeline with Connecting Lines */}
+        <div className="relative max-w-6xl mx-auto mb-12">
+          {/* Progress Bar */}
+          <div className="mb-2 px-4">
+            <div className="flex justify-between text-sm text-gray-500 mb-1">
+              <span>Start</span>
+              <span>Complete</span>
             </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+          
+          {/* Flow Steps */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+            {/* Connecting Line */}
+            <div className="hidden md:block absolute top-10 left-0 w-full h-0.5 bg-gray-200 z-0"></div>
+            
+            {supplyChainSteps.map((step, index) => {
+              const isActive = index === activeStep;
+              const isPast = index < activeStep;
+              const isFuture = index > activeStep;
+              
+              return (
+                <div 
+                  key={step.id}
+                  className={`flow-step relative z-10 flex flex-col items-center ${
+                    isActive ? "scale-105 transition-all duration-300" : ""
+                  }`}
+                  onClick={() => handleStepClick(index)}
+                >
+                  {/* Step Number & Icon */}
+                  <div className={`
+                    w-20 h-20 rounded-full flex items-center justify-center
+                    shadow-md transition-all duration-300 cursor-pointer
+                    ${isActive ? step.color : isPast ? "bg-green-100" : "bg-gray-100"}
+                    ${isActive ? "ring-4 ring-opacity-50 " + step.color.replace("bg-", "ring-") : ""}
+                  `}>
+                    {isPast ? (
+                      <Check className="h-10 w-10 text-green-500" />
+                    ) : (
+                      React.createElement(step.icon, {
+                        className: `h-10 w-10 ${isActive ? "text-white" : "text-gray-500"}`,
+                      })
+                    )}
+                    
+                    {/* Step number indicator */}
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-sm font-medium">
+                      {index + 1}
+                    </div>
+                  </div>
+                  
+                  {/* Step Title */}
+                  <h3 className={`mt-4 font-medium text-center ${isActive ? "text-primary" : "text-gray-700"}`}>
+                    {step.title}
+                  </h3>
+                  
+                  {/* Connector Arrow */}
+                  {index < supplyChainSteps.length - 1 && (
+                    <div className="hidden md:flex absolute top-10 left-[calc(100%-16px)] z-20">
+                      <ChevronRight className={`h-8 w-8 ${index < activeStep ? "text-green-500" : "text-gray-300"}`} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
-
-        {/* Main content with tabs */}
-        <div className="max-w-5xl mx-auto">
-          <Tabs defaultValue={supplyChainSteps[activeStep].id} value={supplyChainSteps[activeStep].id} onValueChange={(value) => {
-            const newIndex = supplyChainSteps.findIndex(step => step.id === value);
-            if (newIndex !== -1) handleStepClick(newIndex);
-          }}>
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-              {/* Left side: Steps list with visual indicators */}
-              <div className="w-full md:w-1/3">
-                <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                  <TabsList className="flex flex-col w-full rounded-none bg-white p-0">
-                    {supplyChainSteps.map((step, index) => (
-                      <TabsTrigger
-                        key={step.id}
-                        value={step.id}
-                        className={`flex items-start gap-3 px-4 py-5 border-b border-gray-100 justify-start w-full ${
-                          activeStep === index
-                            ? "bg-primary/5 data-[state=active]:bg-primary/5"
-                            : "data-[state=active]:bg-white"
-                        }`}
-                      >
-                        <div className={`flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full ${step.color} shadow-sm`}>
-                          {React.createElement(step.icon, {
-                            className: "h-5 w-5 text-white",
-                          })}
-                          {activeStep === index && (
-                            <div className="absolute -right-1 -top-1 h-4 w-4 bg-white rounded-full flex items-center justify-center">
-                              <Check className="h-3 w-3 text-green-500" />
-                            </div>
-                          )}
+        
+        {/* Active Step Details */}
+        <div className={`
+          flow-detail-card max-w-4xl mx-auto 
+          ${animating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'} 
+          transition-all duration-300
+        `}>
+          <Card className="shadow-lg border-0 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 lg:grid-cols-7 gap-0">
+                {/* Left Panel - Icon */}
+                <div className="lg:col-span-3 flex justify-center items-center p-8">
+                  <div className={`p-8 rounded-xl ${supplyChainSteps[activeStep].color}/10 aspect-square flex items-center justify-center`}>
+                    <div className={`relative rounded-full ${supplyChainSteps[activeStep].color} p-8 shadow-lg`}>
+                      {React.createElement(supplyChainSteps[activeStep].icon, {
+                        className: "h-16 w-16 text-white",
+                      })}
+                      <div className="absolute -right-2 -bottom-2 h-8 w-8 bg-white rounded-full shadow-sm flex items-center justify-center">
+                        <div className={`h-6 w-6 ${supplyChainSteps[activeStep].color} rounded-full flex items-center justify-center`}>
+                          <Check className="h-4 w-4 text-white" />
                         </div>
-                        <div className="text-left">
-                          <div className="font-medium text-gray-900">
-                            {step.title}
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                            {step.description}
-                          </p>
-                        </div>
-                        {activeStep === index && (
-                          <div className="absolute right-4">
-                            <ArrowRight className="h-4 w-4 text-primary animate-bounce-light" />
-                          </div>
-                        )}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </div>
-              </div>
-
-              {/* Right side: Detailed content for each step */}
-              <div className="w-full md:w-2/3">
-                <Card className="border-0 shadow-lg overflow-hidden bg-white">
-                  <div className="relative">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gray-200">
-                      <div 
-                        ref={timelineRef}
-                        className="h-full bg-primary rounded-r-full"
-                        style={{ width: `${((activeStep + 1) / supplyChainSteps.length) * 100}%` }}
-                      ></div>
-                    </div>
-                    <div className="pt-6 px-1 text-xs text-gray-500 flex justify-between items-center">
-                      <div className="px-5">Step {activeStep + 1} of {supplyChainSteps.length}</div>
-                      <div className="px-5">Auto-advancing in 5s</div>
+                      </div>
                     </div>
                   </div>
+                </div>
 
-                  {supplyChainSteps.map((step, index) => (
-                    <TabsContent 
-                      key={step.id} 
-                      value={step.id}
-                      className={`mt-0 ${
-                        animating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-                      } transition-all duration-300`}
+                {/* Right Panel - Details */}
+                <div className="lg:col-span-4 flex flex-col justify-center p-8 bg-gray-50 h-full">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                    <Clock className="h-4 w-4" />
+                    <span>Auto-advancing in 5s</span>
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-3">{supplyChainSteps[activeStep].title}</h3>
+                  <p className="text-gray-600 mb-6">{supplyChainSteps[activeStep].description}</p>
+                  
+                  <div className="bg-white border border-gray-100 rounded-lg p-4 mb-6">
+                    <div className="text-sm font-medium text-gray-700 mb-1">Blockchain Verification:</div>
+                    <div className="text-gray-600">{supplyChainSteps[activeStep].detail}</div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    <Button 
+                      onClick={() => handleStepClick((activeStep + supplyChainSteps.length - 1) % supplyChainSteps.length)}
+                      variant="outline"
+                      size="sm"
+                      className="gap-1"
                     >
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-                          <div className="lg:col-span-3 flex justify-center items-center">
-                            <div className={`p-8 rounded-xl ${step.color}/10 w-full aspect-square flex items-center justify-center`}>
-                              <div className={`relative rounded-full ${step.color} p-8 shadow-lg animate-bounce-light`}>
-                                {React.createElement(step.icon, {
-                                  className: "h-14 w-14 text-white",
-                                })}
-                                <div className="absolute -right-2 -bottom-2 h-8 w-8 bg-white rounded-full shadow-sm flex items-center justify-center">
-                                  <div className={`h-6 w-6 ${step.color} rounded-full flex items-center justify-center animate-pulse`}>
-                                    <Check className="h-4 w-4 text-white" />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="lg:col-span-4 flex flex-col justify-center">
-                            <h3 className="text-2xl font-bold mb-3">{step.title}</h3>
-                            <p className="text-gray-600 mb-6">{step.description}</p>
-                            
-                            <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 mb-6">
-                              <div className="text-sm font-medium text-gray-700 mb-1">Blockchain Verification:</div>
-                              <div className="text-gray-600">{step.detail}</div>
-                            </div>
-                            
-                            <Button 
-                              onClick={() => handleStepClick((index + 1) % supplyChainSteps.length)}
-                              className="w-full sm:w-auto bg-primary hover:bg-primary-dark transition-all"
-                            >
-                              Next Step
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </TabsContent>
-                  ))}
-                </Card>
+                      Previous
+                    </Button>
+                    <Button 
+                      onClick={() => handleStepClick((activeStep + 1) % supplyChainSteps.length)}
+                      className="gap-1"
+                      size="sm"
+                    >
+                      Next Step
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+                
+        {/* Mobile Version Indicators */}
+        <div className="md:hidden flex justify-center mt-8">
+          <div className="flex space-x-2">
+            {supplyChainSteps.map((_, index) => (
+              <div 
+                key={index}
+                onClick={() => handleStepClick(index)}
+                className={`h-2 rounded-full cursor-pointer transition-all ${
+                  index === activeStep 
+                    ? "w-8 bg-primary" 
+                    : "w-2 bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
-      
-      <style>
-        {`
-          /* Auto-scrolling marquee effect */
-          @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          
-          .animate-marquee {
-            white-space: nowrap;
-            animation: marquee 15s linear infinite;
-          }
-          
-          @keyframes bounce-light {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-          }
-          
-          .animate-bounce-light {
-            animation: bounce-light 2s infinite ease-in-out;
-          }
-        `}
-      </style>
     </div>
   );
 };
