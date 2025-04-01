@@ -1,7 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Truck, ShieldCheck, QrCode, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import gsap from "gsap";
 
 const supplyChainSteps = [
   {
@@ -37,6 +38,42 @@ const supplyChainSteps = [
 const SupplyChainDemo = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const scrollContainerRef = useRef(null);
+  const autoScrollIntervalRef = useRef(null);
+
+  // Auto scroll through steps
+  useEffect(() => {
+    autoScrollIntervalRef.current = setInterval(() => {
+      setAnimating(true);
+      setTimeout(() => {
+        setActiveStep((prev) => (prev + 1) % supplyChainSteps.length);
+        setAnimating(false);
+      }, 500);
+    }, 5000); // Change step every 5 seconds
+
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Animate the active step
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const activeElement = scrollContainerRef.current.children[activeStep];
+      if (activeElement) {
+        gsap.to(scrollContainerRef.current, {
+          scrollTo: { 
+            y: activeElement.offsetTop - 20, 
+            autoKill: true 
+          },
+          duration: 0.5,
+          ease: "power2.out"
+        });
+      }
+    }
+  }, [activeStep]);
 
   const handleNextStep = () => {
     if (animating) return;
@@ -48,8 +85,20 @@ const SupplyChainDemo = () => {
     }, 500);
   };
 
-  const handleStepClick = (index: number) => {
+  const handleStepClick = (index) => {
     if (animating || index === activeStep) return;
+    
+    // Reset auto-scroll timer when manual click happens
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = setInterval(() => {
+        setAnimating(true);
+        setTimeout(() => {
+          setActiveStep((prev) => (prev + 1) % supplyChainSteps.length);
+          setAnimating(false);
+        }, 500);
+      }, 5000);
+    }
     
     setAnimating(true);
     setTimeout(() => {
@@ -72,7 +121,7 @@ const SupplyChainDemo = () => {
         </div>
 
         <div className="relative">
-          {/* Supply Chain Demo */}
+          {/* Supply Chain Auto-Scrolling Demo */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="order-2 lg:order-1">
               <div className="bg-gray-50 rounded-xl p-6 shadow-sm border border-gray-100 h-full animate-fade-in animate-hover-glow">
@@ -126,18 +175,55 @@ const SupplyChainDemo = () => {
                     </div>
                   </div>
                 </div>
+                
+                <div className="overflow-hidden mb-4 rounded">
+                  <div className="flex justify-between px-2 py-1 bg-gray-100">
+                    <div className="text-sm text-gray-500">Auto-scrolling supply chain journey</div>
+                    <div className="text-sm text-primary">{activeStep + 1}/{supplyChainSteps.length}</div>
+                  </div>
+                  <div className="w-full bg-gray-200 h-1.5">
+                    <div 
+                      className="bg-primary h-1.5 transition-all duration-300"
+                      style={{ width: `${((activeStep + 1) / supplyChainSteps.length) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
                 <Button
                   onClick={handleNextStep}
                   className="w-full bg-primary hover:bg-primary-dark transition-all duration-300 hover:shadow-lg"
                 >
-                  Next Step
+                  Skip to Next Step
                 </Button>
               </div>
             </div>
             
             <div className="order-1 lg:order-2">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Supply Chain Journey</h3>
-              <div className="space-y-4 stagger-animation">
+              
+              <div className="relative overflow-x-auto">
+                <div className="absolute top-0 left-0 -z-10 w-full overflow-hidden whitespace-nowrap">
+                  <div className="inline-block animate-marquee">
+                    {[...supplyChainSteps, ...supplyChainSteps].map((step, idx) => (
+                      <div 
+                        key={`marquee-${step.id}-${idx}`}
+                        className="inline-block px-2"
+                      >
+                        <div className={`p-2 rounded-md ${step.color} mx-2`}>
+                          {React.createElement(step.icon, {
+                            className: "h-4 w-4 text-white",
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div 
+                ref={scrollContainerRef}
+                className="space-y-4 stagger-animation overflow-auto max-h-[500px] scroll-smooth pr-2 hide-scrollbar"
+              >
                 {supplyChainSteps.map((step, index) => (
                   <div
                     key={step.id}
@@ -181,6 +267,31 @@ const SupplyChainDemo = () => {
           </div>
         </div>
       </div>
+      
+      <style>
+        {`
+          /* Auto-scrolling marquee effect */
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          
+          .animate-marquee {
+            white-space: nowrap;
+            animation: marquee 15s linear infinite;
+          }
+          
+          /* Hide scrollbar but keep functionality */
+          .hide-scrollbar {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+          }
+          
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+          }
+        `}
+      </style>
     </div>
   );
 };

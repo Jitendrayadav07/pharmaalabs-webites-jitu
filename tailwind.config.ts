@@ -125,6 +125,10 @@ export default {
 				'bounce-light': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-5px)' }
+				},
+				'marquee': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(-50%)' }
 				}
 			},
 			animation: {
@@ -137,7 +141,8 @@ export default {
 				'fade-in-left': 'fade-in-left 0.5s ease-out',
 				'fade-in-right': 'fade-in-right 0.5s ease-out',
 				'zoom-in': 'zoom-in 0.5s ease-out',
-				'bounce-light': 'bounce-light 2s infinite ease-in-out'
+				'bounce-light': 'bounce-light 2s infinite ease-in-out',
+				'marquee': 'marquee 15s linear infinite'
 			}
 		}
 	},
