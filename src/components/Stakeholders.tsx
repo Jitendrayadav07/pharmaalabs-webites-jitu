@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Database, Truck, Users, User } from "lucide-react";
 
 const stakeholders = [
