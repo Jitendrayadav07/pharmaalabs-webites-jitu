@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef } from "react";
-import { Database, Truck, Users, User, Check, ExternalLink } from "lucide-react";
+import { Database, Truck, Users, User, Check, ExternalLink, ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -166,9 +166,8 @@ const Stakeholders = () => {
               className="group relative flex flex-col bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-gray-100"
             >
               {/* Colorful top border */}
-              <div className="h-2 w-full bg-gradient-to-r transition-all duration-300 group-hover:h-3"
-                style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }}
-                className={`${stakeholder.gradient}`}
+              <div 
+                className={`h-2 w-full bg-gradient-to-r ${stakeholder.gradient} transition-all duration-300 group-hover:h-3`}
               ></div>
               
               <div className="p-6 flex-grow">
