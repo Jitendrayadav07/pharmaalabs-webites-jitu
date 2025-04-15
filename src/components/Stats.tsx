@@ -1,4 +1,10 @@
 
+import React, { useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
 const stats = [
   { id: 1, name: "Lives at risk from fake medicine", value: "1 Million+", description: "Annual fatalities due to counterfeit drugs" },
   { id: 2, name: "Market value of fake drugs", value: "$200 Billion", description: "Estimated global counterfeit drug market" },
