@@ -1,11 +1,10 @@
 
 import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Shield, Database, Check } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
@@ -13,6 +12,7 @@ const Hero = () => {
   const descRef = useRef(null);
   const buttonsRef = useRef(null);
   const medicineCardRef = useRef(null);
+  const highlightsRef = useRef(null);
   
   useEffect(() => {
     // Hero section entrance animation
@@ -46,6 +46,14 @@ const Hero = () => {
       ease: "elastic.out(1, 0.8)"
     }, "-=0.5");
     
+    timeline.from(highlightsRef.current.children, {
+      opacity: 0,
+      y: 20,
+      stagger: 0.1,
+      duration: 0.6,
+      ease: "power3.out"
+    }, "-=0.7");
+    
     // Parallax effect for medicine card
     gsap.to(medicineCardRef.current, {
       y: -30,
@@ -64,11 +72,15 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative bg-white overflow-hidden pt-20">
+    <div className="relative bg-white overflow-hidden pt-24">
+      {/* Background elements */}
       <div className="absolute inset-0 hexagon-grid"></div>
-      <div className="relative pt-10 pb-20 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28">
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-bl-full"></div>
+      <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-pharma-accent/5 rounded-tr-full"></div>
+      
+      <div className="relative pb-20 sm:pb-24 lg:pb-28">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 
                 ref={headingRef}
@@ -87,18 +99,34 @@ const Hero = () => {
                 through real-time tracking and verification across the entire supply chain. 
                 From manufacturer to consumer, we provide an unbreakable chain of trust.
               </p>
+              
+              {/* Key highlights */}
+              <div 
+                ref={highlightsRef}
+                className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div className="flex items-start space-x-2 bg-white/60 backdrop-blur-sm p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-600">Verified by leading pharma companies</span>
+                </div>
+                <div className="flex items-start space-x-2 bg-white/60 backdrop-blur-sm p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+                  <Shield className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-600">100% secure blockchain technology</span>
+                </div>
+              </div>
+              
               <div 
                 ref={buttonsRef}
                 className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0"
               >
                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-4 justify-center lg:justify-start">
-                  <Button className="bg-primary hover:bg-primary-dark text-white px-8 transition-all duration-300 transform hover:translate-y-[-4px] hover:shadow-lg">
+                  <Button className="bg-primary hover:bg-primary-dark text-white px-8 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-primary text-primary hover:text-primary-dark transition-all duration-300 transform hover:translate-y-[-4px] hover:shadow-md"
+                    className="border-primary text-primary hover:text-primary-dark transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md"
                   >
                     Watch Demo
                   </Button>
@@ -111,11 +139,11 @@ const Hero = () => {
             <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
               <div 
                 ref={medicineCardRef}
-                className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md"
+                className="relative mx-auto w-full rounded-xl overflow-hidden shadow-2xl lg:max-w-md"
               >
-                <div className="relative block w-full bg-white rounded-lg overflow-hidden transform transition-all duration-500 hover:scale-105">
+                <div className="relative block w-full bg-white rounded-xl overflow-hidden transform transition-all duration-500 hover:scale-[1.02]">
                   <div className="aspect-w-16 aspect-h-9">
-                    <div className="w-full h-full flex items-center justify-center bg-pharma-light p-8">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-pharma-light to-white p-8">
                       <div className="relative w-full max-w-sm mx-auto">
                         <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 animate-float">
                           <div className="flex flex-col items-center">
@@ -137,11 +165,14 @@ const Hero = () => {
                             <div className="h-2 bg-gray-200 rounded w-full mb-2"></div>
                             <div className="h-2 bg-gray-200 rounded w-5/6"></div>
                           </div>
-                          <div className="mt-5 mb-2">
-                            <div className="w-full h-1 bg-gradient-to-r from-red-400 via-green-400 to-blue-400 rounded animate-scan"></div>
+                          <div className="mt-5 mb-2 relative overflow-hidden">
+                            <div className="w-full h-1.5 bg-gray-200 rounded"></div>
+                            <div className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-primary to-pharma-accent w-2/3 rounded animate-scan"></div>
                           </div>
                           <div className="flex justify-between mt-4">
-                            <div className="h-6 bg-primary rounded-md w-20"></div>
+                            <div className="h-6 bg-primary rounded-md w-20 flex items-center justify-center">
+                              <span className="text-white text-xs font-medium">Verified</span>
+                            </div>
                             <div className="h-6 bg-gray-200 rounded-md w-10"></div>
                           </div>
                         </div>
