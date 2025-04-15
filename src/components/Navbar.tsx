@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
@@ -11,27 +10,44 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm fixed w-full z-50">
+    <nav className="bg-white shadow-sm fixed w-full z-50 py-4">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-primary">Pharma<span className="text-pharma-accent">Labs</span></span>
+              <img
+                src="/images/main_logo.png"
+                alt="PharmaLabs Logo"
+                className="h-32 w-52 mr-3"
+              />
+             
             </a>
           </div>
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-6">
-            <a href="#features" className="text-gray-700 hover:text-primary transition-colors">
+            <a
+              href="#features"
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
               Features
             </a>
-            <a href="#solution" className="text-gray-700 hover:text-primary transition-colors">
+            <a
+              href="#solution"
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
               Solution
             </a>
-            <a href="#stakeholders" className="text-gray-700 hover:text-primary transition-colors">
+            <a
+              href="#stakeholders"
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
               Stakeholders
             </a>
-            <a href="#demo" className="text-gray-700 hover:text-primary transition-colors">
+            <a
+              href="#demo"
+              className="text-gray-700 hover:text-primary transition-colors"
+            >
               Demo
             </a>
             <Button className="bg-primary hover:bg-primary-dark">
@@ -66,13 +82,13 @@ const Navbar = () => {
             >
               Features
             </a>
-            <a
+            {/* <a
               href="#solution"
               className="text-gray-700 hover:text-primary transition-colors"
               onClick={toggleMenu}
             >
               Solution
-            </a>
+            </a> */}
             <a
               href="#stakeholders"
               className="text-gray-700 hover:text-primary transition-colors"

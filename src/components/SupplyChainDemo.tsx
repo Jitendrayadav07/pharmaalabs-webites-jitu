@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from "react";
 import { Truck, ShieldCheck, QrCode, Database } from "lucide-react";
 import gsap from "gsap";
@@ -56,7 +55,7 @@ const SupplyChainDemo = () => {
       duration: 0.8,
       scrollTrigger: {
         trigger: sectionRef.current,
-        start: "top 80%",
+        start: "top 90%",
         toggleActions: "play none none none"
       }
     });
@@ -65,32 +64,28 @@ const SupplyChainDemo = () => {
     stepsRef.current.forEach((step, index) => {
       if (!step) return;
 
-      // Create timeline for each step
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: step,
-          start: "top 70%",
-          end: "bottom 20%",
+          start: "top 95%", // start animation when top of step hits 95% of viewport
+          end: "bottom 70%",
           toggleActions: "play none none reverse",
           scrub: 1,
         }
       });
 
-      // Add animations to timeline
       tl.from(step, {
         x: index % 2 === 0 ? -100 : 100,
         opacity: 0,
         duration: 1
       });
 
-      // Animate icon
       tl.from(step.querySelector('.step-icon'), {
         scale: 0,
         rotate: 180,
         duration: 0.5
       }, "-=0.5");
 
-      // Animate content
       tl.from(step.querySelector('.step-content'), {
         y: 50,
         opacity: 0,

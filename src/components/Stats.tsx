@@ -157,14 +157,7 @@ const Stats = () => {
           className="mt-20 text-center"
         >
           <h3 className="text-2xl font-bold text-white mb-6">Ready to Join the Fight Against Counterfeit Medicine?</h3>
-          <a
-            href="#"
-            className="inline-flex items-center px-8 py-4 bg-white text-primary font-medium rounded-full 
-                     shadow-lg hover:shadow-2xl transform transition-all duration-300 hover:-translate-y-1 group"
-          >
-            Partner With Us
-            <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
-          </a>
+         
         </div>
       </div>
     </div>
